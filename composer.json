@@ -13,6 +13,9 @@
         "yiisoft/yii2": "*",
         "herzult/php-ssh": "~1.0"
     },
+    "autoload": {
+        "psr-4": { "trntv\\deploy\\": "" }
+    },
     "extra":{
         "asset-installer-paths": {
             "npm-asset-library": "vendor/npm",
