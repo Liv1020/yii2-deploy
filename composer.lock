@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "af9f09973227c84c3a03f7a9ba724ff0",
+    "hash": "d613cf95c383c3b109ef34830042f137",
     "packages": [
         {
             "name": "bower-asset/jquery",
@@ -320,12 +320,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/yiisoft/yii2-framework.git",
-                "reference": "2a498ea74a060a714b332ed0c795cb530b567094"
+                "reference": "dc2352c6164c27a4f8ea93e93262f48276fea313"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiisoft/yii2-framework/zipball/2a498ea74a060a714b332ed0c795cb530b567094",
-                "reference": "2a498ea74a060a714b332ed0c795cb530b567094",
+                "url": "https://api.github.com/repos/yiisoft/yii2-framework/zipball/dc2352c6164c27a4f8ea93e93262f48276fea313",
+                "reference": "dc2352c6164c27a4f8ea93e93262f48276fea313",
                 "shasum": ""
             },
             "require": {
@@ -400,7 +400,7 @@
                 "framework",
                 "yii2"
             ],
-            "time": "2014-09-24 17:13:53"
+            "time": "2014-09-24 19:55:55"
         },
         {
             "name": "yiisoft/yii2-composer",
