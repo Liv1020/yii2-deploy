@@ -5,80 +5,98 @@
 namespace trntv\deploy\controllers;
 
 use trntv\deploy\base\Server;
+use trntv\deploy\base\Task;
 use yii\base\InvalidConfigException;
 use yii\base\InvalidParamException;
 use yii\console\Controller;
+use yii\di\Container;
+use yii\di\Instance;
+use yii\di\ServiceLocator;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Console;
+use yii\web\ErrorAction;
 
 class DeployController extends Controller{
-    /**
-     * @var \yii\di\Container
-     */
-    public $container;
 
-    private $_tasks = [];
+    public $services;
+    public $tasks;
+    public $servers;
+
+    private $_tasks;
 
     public function init(){
-        $this->container = new \yii\di\Container();
+        $this->services = $this->tasks = $this->servers = new ServiceLocator();
     }
 
-    public function actionRecipe($recipe, $server = false){
+    public function actionIndex($recipe, $servers){
+        // Load recipe
         $recipe = \Yii::getAlias($recipe);
         if(!file_exists($recipe)){
             throw new InvalidParamException('Wrong recipe file path');
         }
+
         $recipe = require($recipe);
         if(!is_array($recipe) || !isset($recipe['tasks'])){
             throw new InvalidConfigException('Recipe must include tasks');
         }
-        $services = ArrayHelper::getValue($recipe, 'services');
-        if($services){
-            foreach($services as $service => $serviceConfig){
-                $this->container->set($service, $serviceConfig);
-            }
-        }
 
-        if($server !== false) {
-            $server = \Yii::getAlias($server);
-            if (!file_exists($server)) {
-                throw new InvalidParamException('Wrong server file path');
-            }
-            $serverConfig = require($server);
-        } else {
-            $serverConfig = [];
-        }
-        $this->container->setSingleton('server', Server::className(), $serverConfig);
+        // Set servers
+        $serversConfig = require(\Yii::getAlias($servers));
+        $this->registerServers($serversConfig);
+
+        // Set services
+        $this->registerServices(ArrayHelper::getValue($recipe, 'services'));
 
         foreach($recipe['tasks'] as $id  => $task){
             $this->registerTask($id, $task);
-            $this->_tasks[] = $id;
         }
 
-
-        foreach($this->_tasks as $k => $taskId){
-            echo sprintf('Running task "%s" (%d/%d)', $taskId, $k, count($this->_tasks));
-            if($this->runTask($taskId) === false){
-                return Controller::EXIT_CODE_ERROR;
-            };
-        }
+        if($this->runTasks() === false){
+            Console::error('Error!');
+            return Controller::EXIT_CODE_ERROR;
+        };
+        Console::output('Success!');
         return Controller::EXIT_CODE_NORMAL;
     }
 
+    /**
+     * Register servers
+     * @param $serversConfig
+     */
+    protected function registerServers($serversConfig){
+        $this->servers->components = $serversConfig;
+    }
 
+    public function registerServices($services){
+        $this->services->components = $services;
+    }
 
     public function registerTask($taskId, $task){
-        $this->container->set($taskId, [
+        $this->tasks->set($taskId, [
+            'class'=>Task::className(),
             'id'=>$taskId,
             'closure'=>$task
         ]);
+        $this->_tasks[] = $taskId;
         return $this;
     }
 
-    protected function runTask($taskId){
-        /**
-         * @var $task \trntv\deploy\base\Task
-         */
-        $task = $this->container->get($taskId);
-        return $task->run();
+    protected function runTasks(){
+        foreach($this->_tasks as $k => $taskId){
+            Console::output(sprintf('Running task "%s" (%d/%d)', $taskId, $k+1, count($this->_tasks)));
+            $result = $this->tasks
+                ->get($taskId)
+                ->run(
+                    $this->servers,
+                    $this->services,
+                    $this->tasks,
+                    $k
+                );
+            if($result === false){
+                Console::error(sprintf('Task "%s" failed.', $taskId));
+                return false;
+            }
+        }
+        return true;
     }
-} 
+}

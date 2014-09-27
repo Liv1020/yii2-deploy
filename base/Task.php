@@ -9,9 +9,8 @@ use yii\base\Object;
 class Task extends Object{
     public $id;
     public $closure;
-    public $container;
 
-    public function run(){
-        return call_user_func($this->closure, $this->container, $this);
+    public function run($server, $services, $tasks){
+        return call_user_func($this->closure, $server, $services, $tasks, $this);
     }
 }

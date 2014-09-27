@@ -5,41 +5,62 @@
 
 namespace trntv\deploy\base;
 
+use yii\base\Exception;
 use yii\base\Object;
+use yii\console\Controller;
+use yii\helpers\Console;
 
 class Server extends Object{
     public $connection = false;
 
     public $phpBin = '/usr/bin/php';
+    private $_channel;
     private $_session;
+    private $_exec;
+
+    public function getChannel(){
+        if(!$this->_channel){
+            if(is_array($this->connection) && !isset($this->connection['class'])){
+                $this->connection['class'] = Connection::className();
+            }
+            $this->_channel = \Yii::createObject($this->connection);
+        }
+        return $this->_channel;
+    }
 
     /**
-     * @throws \yii\base\InvalidConfigException
      * @return \Ssh\Session
      */
     public function getSession(){
-        if($this->connection){
-            if(!$this->_session){
-                $this->_session = \Yii::createObject($this->connection);
-            }
+        if(!$this->_session){
+            $this->_session = $this->getChannel()->getSession();
         }
         return $this->_session;
     }
 
     protected function getExec(){
-        if($this->getSession()){
-            return function($command){
-                return $this->getExec()->run($command);
-            };
-        } else {
-            return function($command){
-                return shell_exec($command);
-            };
+        if(!$this->_exec){
+            if($this->connection){
+                $this->_exec = function($command){
+                    return $this->getSession()->getExec()->run($command);
+                };
+            } else {
+                $this->_exec = function($command){
+                    return shell_exec($command);
+                };
+            }
         }
+        return $this->_exec;
     }
 
     public function execute($command, $params = []){
         $command = strtr($command, $params);
-        return $this->getExec($command);
+        $exec = $this->getExec();
+        try{
+            return $exec($command);
+        } catch(\RuntimeException $e){
+            Console::error($e->getMessage());
+            return false;
+        }
     }
-} 
+}
