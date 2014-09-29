@@ -13,13 +13,14 @@ class ComposerService extends Service{
     public $path;
     public $composer;
 
-    public function install()
+    public function install($dev = true)
     {
         Console::output('Installing composer packages...');
-        return $this->server->execute('cd :path && :phpBin :composer install --prefer-dist', [
+        return $this->server->execute('cd :path && :phpBin :composer install --prefer-dist :no-dev', [
             ':path'=>$this->path,
             ':phpBin'=>$this->server->phpBin,
-            ':composer'=>$this->composer
+            ':composer'=>$this->composer,
+            ':no-dev'=>$dev ? null : '--no-dev'
         ]);
     }
 

@@ -42,9 +42,11 @@ class GitService extends Service{
 
     public function getRemoteLastCommit()
     {
-        return $this->server->execute('git ls-remote :repositoryUrl :branch | grep refs/heads/master | cut -f 1', [
+        $commit = $this->server->execute('git ls-remote :repositoryUrl :branch | grep refs/heads/master | cut -f 1', [
             ':repositoryUrl'=>$this->repositoryUrl,
             ':branch'=>$this->branch
         ]);
+        $commit = trim($commit);
+        return $commit;
     }
 }
