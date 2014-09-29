@@ -47,9 +47,8 @@ class DeployController extends Controller{
         // Set services
         $this->registerServices(ArrayHelper::getValue($recipe, 'services'));
 
-        foreach($recipe['tasks'] as $id  => $task){
-            $this->registerTask($id, $task);
-        }
+        // Set tasks
+        $this->registerTasks(ArrayHelper::getValue($recipe, 'tasks'));
 
         if($this->runTasks() === false){
             Console::error('Error!');
