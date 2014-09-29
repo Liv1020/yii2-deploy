@@ -24,13 +24,14 @@ class ComposerService extends Service{
         ]);
     }
 
-    public function update()
+    public function update($dev = true)
     {
         Console::output('Updating composer packages...');
-        return $this->server->execute('cd :path && :phpBin :composer update --prefer-dist', [
+        return $this->server->execute('cd :path && :phpBin :composer update --prefer-dist :no-dev', [
             ':path'=>$this->path,
             ':phpBin'=>$this->server->phpBin,
-            ':composer'=>$this->composer
+            ':composer'=>$this->composer,
+            ':no-dev'=>$dev ? null : '--no-dev'
         ]);
     }
 
