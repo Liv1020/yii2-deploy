@@ -9,7 +9,7 @@ use yii\base\Object;
 use yii\di\Instance;
 use yii\helpers\Console;
 
-class Composer extends Service{
+class ComposerService extends Service{
     public $path;
     public $composer;
 

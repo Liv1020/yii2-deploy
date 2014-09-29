@@ -10,7 +10,7 @@ class Task extends Object{
     public $id;
     public $closure;
 
-    public function run($server, $services, $tasks){
-        return call_user_func($this->closure, $server, $services, $tasks, $this);
+    public function run($servers, $services, $tasks){
+        return call_user_func($this->closure, $servers, $services, $tasks, $this);
     }
 }

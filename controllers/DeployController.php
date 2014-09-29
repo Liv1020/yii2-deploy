@@ -18,14 +18,14 @@ use yii\web\ErrorAction;
 
 class DeployController extends Controller{
 
-    public $services;
-    public $tasks;
-    public $servers;
-
+    /**
+     * @var \yii\di\ServiceLocator
+     */
+    public $container;
     private $_tasks;
 
     public function init(){
-        $this->services = $this->tasks = $this->servers = new ServiceLocator();
+        $this->container = new ServiceLocator();
     }
 
     public function actionIndex($recipe, $servers){
@@ -63,37 +63,40 @@ class DeployController extends Controller{
      * Register servers
      * @param $serversConfig
      */
-    protected function registerServers($serversConfig){
-        $this->servers->components = $serversConfig;
+    protected function registerServers(array $serversConfig){
+        foreach($serversConfig as $id => $component){
+            $this->container->set("servers.$id", $component);
+        }
     }
 
-    public function registerServices($services){
-        $this->services->components = $services;
+    public function registerServices(array $servicesConfig){
+        foreach($servicesConfig as $id => $component){
+            $this->container->set("services.$id", $component);
+        }
     }
 
-    public function registerTask($taskId, $task){
-        $this->tasks->set($taskId, [
-            'class'=>Task::className(),
-            'id'=>$taskId,
-            'closure'=>$task
-        ]);
-        $this->_tasks[] = $taskId;
-        return $this;
+    public function registerTasks($tasksConfig){
+        foreach($tasksConfig as $id => $task){
+            $this->container->set("tasks.$id", [
+                'class'=>Task::className(),
+                'id'=>$id,
+                'closure'=>$task
+            ]);
+            $this->_tasks[] = $id;
+        }
     }
 
     protected function runTasks(){
-        foreach($this->_tasks as $k => $taskId){
-            Console::output(sprintf('Running task "%s" (%d/%d)', $taskId, $k+1, count($this->_tasks)));
-            $result = $this->tasks
-                ->get($taskId)
+        foreach($this->_tasks as $k => $id){
+            Console::output(sprintf('Running task "%s" (%d/%d)', $id, $k+1, count($this->_tasks)));
+            $result = $this->container
+                ->get("tasks.$id")
                 ->run(
-                    $this->servers,
-                    $this->services,
-                    $this->tasks,
-                    $k
+                    $this->container,
+                    $this
                 );
             if($result === false){
-                Console::error(sprintf('Task "%s" failed.', $taskId));
+                Console::error(sprintf('Task "%s" failed.', $id));
                 return false;
             }
         }

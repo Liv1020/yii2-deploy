@@ -9,7 +9,7 @@ use yii\base\Object;
 use yii\di\Instance;
 use yii\helpers\Console;
 
-class Git extends Service{
+class GitService extends Service{
     public $repositoryPath;
     public $repositoryUrl;
     public $remote = 'origin';
@@ -47,4 +47,4 @@ class Git extends Service{
             ':branch'=>$this->branch
         ]);
     }
-} 
+}

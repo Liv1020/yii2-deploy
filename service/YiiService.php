@@ -9,7 +9,7 @@ use yii\base\Object;
 use yii\di\Instance;
 use yii\helpers\Console;
 
-class Yii extends Service{
+class YiiService extends Service{
     public $yii;
     public $options = '--interactive=0';
 
