@@ -30,7 +30,7 @@ class YiiService extends Service{
             ':yii'=>$this->yii,
             ':controller'=>$controller,
             ':action'=>$action,
-            ':options'=>implode(' ', $options)
+            ':options'=>$options.' '.$this->options
         ]);
     }
 } 
