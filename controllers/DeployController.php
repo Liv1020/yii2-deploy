@@ -7,12 +7,11 @@ namespace trntv\deploy\controllers;
 use trntv\deploy\base\Task;
 use yii\base\InvalidConfigException;
 use yii\base\InvalidParamException;
-use yii\console\Controller;
 use yii\di\ServiceLocator;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Console;
 
-class DeployController extends Controller{
+class DeployController extends \yii\console\Controller{
 
     /**
      * @var \yii\di\ServiceLocator
@@ -48,10 +47,10 @@ class DeployController extends Controller{
 
         if($this->runTasks() === false){
             Console::error('Error!');
-            return Controller::EXIT_CODE_ERROR;
+            return self::EXIT_CODE_ERROR;
         };
         Console::output('Success!');
-        return Controller::EXIT_CODE_NORMAL;
+        return self::EXIT_CODE_NORMAL;
     }
 
     /**
