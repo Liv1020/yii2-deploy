@@ -4,17 +4,13 @@
  */
 namespace trntv\deploy\controllers;
 
-use trntv\deploy\base\Server;
 use trntv\deploy\base\Task;
 use yii\base\InvalidConfigException;
 use yii\base\InvalidParamException;
 use yii\console\Controller;
-use yii\di\Container;
-use yii\di\Instance;
 use yii\di\ServiceLocator;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Console;
-use yii\web\ErrorAction;
 
 class DeployController extends Controller{
 
