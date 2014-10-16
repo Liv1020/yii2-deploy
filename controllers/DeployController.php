@@ -21,12 +21,17 @@ class DeployController extends \yii\console\Controller{
     private $_container;
     private $_tasks;
 
+    public function options($actionID)
+    {
+        $options = parent::options($actionID);
+        return $options[] = 'verbosity';
+    }
+
     public function beforeAction($action)
     {
         $this->_container = new ServiceLocator();
         return parent::beforeAction($action);
     }
-
 
     public function actionIndex($recipe, $servers){
         // Load recipe
