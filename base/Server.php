@@ -10,7 +10,7 @@ use yii\base\Object;
 use yii\console\Controller;
 use yii\helpers\Console;
 
-class Server extends Object{
+class Server extends DeployComponent{
     public $connection = false;
 
     public $phpBin = '/usr/bin/php';
@@ -57,6 +57,9 @@ class Server extends Object{
         $command = strtr($command, $params);
         $exec = $this->getExec();
         try{
+            if($this->getIsVerbose()){
+                Console::output("Executing $command");
+            }
             return $exec($command);
         } catch(\RuntimeException $e){
             Console::error($e->getMessage());

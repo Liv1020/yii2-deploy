@@ -6,7 +6,7 @@ namespace trntv\deploy\base;
 
 use yii\base\Object;
 
-class Task extends Object{
+class Task extends DeployComponent{
     public $id;
     public $closure;
 

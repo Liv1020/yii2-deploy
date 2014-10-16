@@ -15,7 +15,7 @@ use yii\base\Object;
  *
  * @package trntv\deploy\service
  */
-class Service extends Object{
+class Service extends DeployComponent{
     public $_server;
 
     public function setServer($server)

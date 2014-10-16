@@ -13,15 +13,20 @@ use yii\helpers\Console;
 
 class DeployController extends \yii\console\Controller{
 
+    public $verbosity = false;
+
     /**
      * @var \yii\di\ServiceLocator
      */
-    public $container;
+    private $_container;
     private $_tasks;
 
-    public function init(){
-        $this->container = new ServiceLocator();
+    public function beforeAction($action)
+    {
+        $this->_container = new ServiceLocator();
+        return parent::beforeAction($action);
     }
+
 
     public function actionIndex($recipe, $servers){
         // Load recipe
@@ -59,19 +64,19 @@ class DeployController extends \yii\console\Controller{
      */
     protected function registerServers(array $serversConfig){
         foreach($serversConfig as $id => $component){
-            $this->container->set("servers.$id", $component);
+            $this->_container->set("servers.$id", $component);
         }
     }
 
     public function registerServices(array $servicesConfig){
         foreach($servicesConfig as $id => $component){
-            $this->container->set("services.$id", $component);
+            $this->_container->set("services.$id", $component);
         }
     }
 
     public function registerTasks($tasksConfig){
         foreach($tasksConfig as $id => $task){
-            $this->container->set("tasks.$id", [
+            $this->_container->set("tasks.$id", [
                 'class'=>Task::className(),
                 'id'=>$id,
                 'closure'=>$task
@@ -83,10 +88,10 @@ class DeployController extends \yii\console\Controller{
     protected function runTasks(){
         foreach($this->_tasks as $k => $id){
             Console::output(sprintf('Running task "%s" (%d/%d)', $id, $k+1, count($this->_tasks)));
-            $result = $this->container
+            $result = $this->_container
                 ->get("tasks.$id")
                 ->run(
-                    $this->container,
+                    $this->_container,
                     $this
                 );
             if($result === false){
