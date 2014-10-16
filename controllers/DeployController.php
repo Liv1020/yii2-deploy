@@ -24,7 +24,8 @@ class DeployController extends \yii\console\Controller{
     public function options($actionID)
     {
         $options = parent::options($actionID);
-        return $options[] = 'verbosity';
+        $options[] = 'verbosity';
+        return $options;
     }
 
     public function beforeAction($action)
