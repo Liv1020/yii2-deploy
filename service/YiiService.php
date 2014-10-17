@@ -24,7 +24,7 @@ class YiiService extends Service{
         ]);
     }
 
-    public function run($controller, $action, $options){
+    public function run($controller, $action, $options = null){
         return $this->server->execute(':phpBin :yii :controller/:action :options', [
             ':phpBin'=>$this->server->phpBin,
             ':yii'=>$this->yii,
