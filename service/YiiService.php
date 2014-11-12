@@ -27,7 +27,7 @@ class YiiService extends Service{
             ':controller'=>$controller,
             ':action'=>$action,
             ':options'=>$options.' '.$this->options,
-            ':env export YII_ENV='.$this->env
+            ':env'=>'export YII_ENV='.$this->env
         ]);
     }
 } 
