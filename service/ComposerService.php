@@ -13,7 +13,7 @@ class ComposerService extends Service{
     public $path;
     public $composer;
     public $defaultOptions = [
-        '--optimize-autoload'
+        '--optimize-autoloader'
     ];
     public function install($dev = true, $options = [])
     {
