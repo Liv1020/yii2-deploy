@@ -12,25 +12,22 @@ use yii\helpers\Console;
 class YiiService extends Service{
     public $yii;
     public $options = '--interactive=0';
+    public $env = 'dev';
 
     public function migrate($action = 'up')
     {
         Console::output('Applying migrations...');
-        return $this->server->execute(':phpBin :yii migrate/:action :options', [
-            ':action'=>$action,
-            ':phpBin'=>$this->server->phpBin,
-            ':yii'=>$this->yii,
-            ':options'=>$this->options
-        ]);
+        return $this->run('migrate', $action,  $this->options);
     }
 
     public function run($controller, $action, $options = null){
-        return $this->server->execute(':phpBin :yii :controller/:action :options', [
+        return $this->server->execute(':env && :phpBin :yii :controller/:action :options', [
             ':phpBin'=>$this->server->phpBin,
             ':yii'=>$this->yii,
             ':controller'=>$controller,
             ':action'=>$action,
-            ':options'=>$options.' '.$this->options
+            ':options'=>$options.' '.$this->options,
+            ':env export YII_ENV='.$this->env
         ]);
     }
 } 

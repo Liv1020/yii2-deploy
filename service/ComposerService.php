@@ -12,26 +12,36 @@ use yii\helpers\Console;
 class ComposerService extends Service{
     public $path;
     public $composer;
-
-    public function install($dev = true)
+    public $defaultOptions = [
+        '--optimize-autoload'
+    ];
+    public function install($dev = true, $options = [])
     {
         Console::output('Installing composer packages...');
-        return $this->server->execute('cd :path && :phpBin :composer install --prefer-dist :no-dev', [
+        return $this->server->execute('cd :path && :phpBin :composer install --prefer-dist :no-dev :options', [
             ':path'=>$this->path,
             ':phpBin'=>$this->server->phpBin,
             ':composer'=>$this->composer,
-            ':no-dev'=>$dev ? null : '--no-dev'
+            ':no-dev'=>$dev ? null : '--no-dev',
+            ':options'=>implode(' ', array_merge(
+                $this->defaultOptions,
+                $options
+            ))
         ]);
     }
 
-    public function update($dev = true)
+    public function update($dev = true, $options = [])
     {
         Console::output('Updating composer packages...');
-        return $this->server->execute('cd :path && :phpBin :composer update --prefer-dist :no-dev', [
+        return $this->server->execute('cd :path && :phpBin :composer update --prefer-dist :no-dev :options', [
             ':path'=>$this->path,
             ':phpBin'=>$this->server->phpBin,
             ':composer'=>$this->composer,
-            ':no-dev'=>$dev ? null : '--no-dev'
+            ':no-dev'=>$dev ? null : '--no-dev',
+            ':options'=>implode(' ', array_merge(
+                $this->defaultOptions,
+                $options
+            ))
         ]);
     }
 
