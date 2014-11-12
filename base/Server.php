@@ -60,7 +60,11 @@ class Server extends DeployComponent{
             if($this->getIsVerbose()){
                 Console::output("Executing $command");
             }
-            return $exec($command);
+            $result = $exec($command);
+            if($this->getIsVerbose()){
+                Console::output($result);
+            }
+            return $result;
         } catch(\RuntimeException $e){
             Console::error($e->getMessage());
             return false;
